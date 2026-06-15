@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: egi-config
+  namespace: inventario
+data:
+  SQL_HOST: "ubicacion-db"
+  SQL_PORT: "1433"
+  SQL_DATABASE: "inventario_ubicacion"
+  MONGO_HOST: "inventario-db"
+  MONGO_PORT: "27017"
+  MONGO_DATABASE: "inventario_hardware"
+  LDAP_URL: "ldap://ldap-service:389"
+  LDAP_BASE_DN: "dc=itu,dc=edu"
