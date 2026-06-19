@@ -1,4 +1,3 @@
-# TODO: definir imagen real y puerto segun el backend.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,14 +39,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: inventario-db-secret
-                  key: username
+                  key: MONGO_INITDB_ROOT_USERNAME
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: inventario-db-secret
-                  key: password
-            - name: LDAP_ADMIN_PASSWORD
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_URI
+              value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@inventario-db:27017/?authSource=admin"
+            - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: ldap-secret
-                  key: admin-password
+                  name: inventario-web-secret
+                  key: JWT_SECRET
