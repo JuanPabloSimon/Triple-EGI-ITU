@@ -1,79 +1,53 @@
+# TODO: definir imagen real y puerto segun el backend.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventario-db
+  name: inventario-web
   namespace: inventario
   labels:
-    app: inventario-db
-<<<<<<< HEAD
-=======
-    tier: database
->>>>>>> origin/desarrollo
+    app: inventario-web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: inventario-db
+      app: inventario-web
   template:
     metadata:
       labels:
-        app: inventario-db
-<<<<<<< HEAD
+        app: inventario-web
     spec:
       containers:
-        - name: inventario-db
-          image: mongo:7
+        - name: inventario-web
+          image: inventario-web:latest
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 27017
-=======
-        tier: database
-    spec:
-      containers:
-        - name: mongodb
-          image: mongo:7.0
-          ports:
-            - containerPort: 27017
-              name: mongo
->>>>>>> origin/desarrollo
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: egi-config
           env:
-            - name: MONGO_INITDB_ROOT_USERNAME
+            - name: SQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: inventario-db-secret
-<<<<<<< HEAD
+                  name: ubicacion-db-secret
                   key: username
-=======
-                  key: MONGO_INITDB_ROOT_USERNAME
->>>>>>> origin/desarrollo
-            - name: MONGO_INITDB_ROOT_PASSWORD
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ubicacion-db-secret
+                  key: password
+            - name: MONGO_USER
               valueFrom:
                 secretKeyRef:
                   name: inventario-db-secret
-<<<<<<< HEAD
-                  key: password
-            - name: MONGO_INITDB_DATABASE
-              value: "inventario_hardware"
-          volumeMounts:
-            - name: mongodata
-              mountPath: /data/db
-      volumes:
-        - name: mongodata
-          persistentVolumeClaim:
-            claimName: inventario-db-pvc
-=======
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-db-secret
                   key: MONGO_INITDB_ROOT_PASSWORD
-          volumeMounts:
-            - name: mongodb-storage
-              mountPath: /data/db
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "200m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-      volumes:
-        - name: mongodb-storage
-          persistentVolumeClaim:
-            claimName: inventario-db-pvc
->>>>>>> origin/desarrollo
+            - name: LDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ldap-secret
+                  key: admin-password
