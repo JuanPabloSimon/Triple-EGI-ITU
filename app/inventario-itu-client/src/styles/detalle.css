@@ -1,0 +1,161 @@
+/* src/styles/detalle.css */
+.detalle {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  text-align: left;
+  overflow-y: auto;
+}
+
+.detalle-main {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  box-sizing: border-box;
+}
+
+.detalle-volver {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 20px;
+  transition: color 0.15s;
+}
+
+.detalle-volver:hover {
+  color: var(--accent);
+}
+
+/* Mensajes de estado */
+.detalle-msg {
+  text-align: center;
+  color: var(--text);
+  padding: 40px 0;
+  font-size: 15px;
+}
+
+.detalle-error {
+  color: #e5484d;
+}
+
+/* Encabezado */
+.detalle-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detalle-codigo {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.detalle-header h1 {
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.detalle-estado {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+
+.detalle-estado--activo {
+  color: #1a7f4b;
+  background: rgba(26, 127, 75, 0.12);
+}
+
+.detalle-estado--mantenimiento {
+  color: #b6791d;
+  background: rgba(182, 121, 29, 0.12);
+}
+
+.detalle-estado--baja {
+  color: #e5484d;
+  background: rgba(229, 72, 77, 0.12);
+}
+
+/* Grilla de cards */
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.detalle-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.detalle-card h2 {
+  font-size: 17px;
+  margin: 0 0 2px;
+}
+
+.detalle-fuente {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.detalle-card dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detalle-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detalle-dato dt {
+  font-size: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detalle-dato dd {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-h);
+}
+
+@media (max-width: 720px) {
+  .detalle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detalle-sinhardware {
+  font-size: 14px;
+  color: var(--text);
+  font-style: italic;
+}

@@ -6,9 +6,10 @@ export interface Usuario {
   username: string;
   email: string;
   rol: Rol;
+  ldap_dn?: string; // viene del backend; opcional en el front
 }
 
-// Datos que vendran de sql server
+// Datos que vienen de SQL Server
 export interface EquipoUbicacion {
   id: number;
   codigo_inventario: string;
@@ -22,9 +23,9 @@ export interface EquipoUbicacion {
   rol_responsable: Rol | null;
 }
 
-// Datros que vendran de Mongo
+// Datos que vienen de MongoDB (forma real del seed de equipos.json)
 export interface EquipoHardware {
-  _id: string;
+  _id: string; // formato "EQ-001"
   fabricante: string;
   modelo: string;
   tipo: "desktop" | "laptop";
@@ -32,7 +33,7 @@ export interface EquipoHardware {
     marca: string;
     modelo: string;
     nucleos: number;
-    frecuencia_ghz: number;
+    frecuencia_ghz?: number; // presente en el seed, pero por las dudas opcional
   };
   ram_gb: number;
   disco: {
@@ -40,14 +41,19 @@ export interface EquipoHardware {
     capacidad_gb: number;
   };
   sistema_operativo: string;
-  monitor: { marca: string; modelo: string; pulgadas: number } | null;
+  // El seed trae monitor con marca + pulgadas, SIN modelo. Modelo opcional.
+  monitor: { marca: string; modelo?: string; pulgadas: number } | null;
   mouse: string | null;
   teclado: string;
-  bateria: { capacidad_mwh: number; ciclos: number } | null;
+  // Solo en laptops
+  bateria?: { capacidad_mwh: number; ciclos: number } | null;
+  // Solo en algunos equipos (workstations)
+  gpu?: { marca: string; modelo: string; vram_gb: number };
 }
 
-// El objeto combinado que usa la pagina de detalles
+// El objeto combinado que devuelve GET /equipos/:id
+// hardware puede ser null si el equipo está en SQL pero no en Mongo
 export interface EquipoCompleto {
   ubicacion: EquipoUbicacion;
-  hardware: EquipoHardware;
+  hardware: EquipoHardware | null;
 }
