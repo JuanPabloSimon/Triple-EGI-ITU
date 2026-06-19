@@ -3,11 +3,14 @@ kind: Service
 metadata:
   name: inventario-db
   namespace: inventario
+  labels:
+    app: inventario-db
 spec:
   type: ClusterIP
   selector:
     app: inventario-db
   ports:
-    - port: 27017
+    - name: mongo
+      port: 27017
       targetPort: 27017
       protocol: TCP

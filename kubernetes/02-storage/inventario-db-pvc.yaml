@@ -4,7 +4,8 @@ metadata:
   name: inventario-db-pvc
   namespace: inventario
 spec:
-  accessModes: [ReadWriteOnce]
+  accessModes:
+    - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
