@@ -1,0 +1,13 @@
+# ConfigMap con el LDIF de usuarios (bootstrap).
+# TODO: pegar el arbol real (OUs + usuarios + hashes SSHA).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-bootstrap
+  namespace: inventario
+data:
+  01-users.ldif: |
+    # dn: ou=alumnos,dc=itu,dc=edu
+    # objectClass: organizationalUnit
+    # ou: alumnos
+    # TODO: completar con los usuarios reales.

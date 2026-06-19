@@ -5,7 +5,10 @@ metadata:
   namespace: inventario
   labels:
     app: inventario-db
+<<<<<<< HEAD
+=======
     tier: database
+>>>>>>> origin/desarrollo
 spec:
   replicas: 1
   selector:
@@ -15,6 +18,14 @@ spec:
     metadata:
       labels:
         app: inventario-db
+<<<<<<< HEAD
+    spec:
+      containers:
+        - name: inventario-db
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+=======
         tier: database
     spec:
       containers:
@@ -23,16 +34,33 @@ spec:
           ports:
             - containerPort: 27017
               name: mongo
+>>>>>>> origin/desarrollo
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: inventario-db-secret
+<<<<<<< HEAD
+                  key: username
+=======
                   key: MONGO_INITDB_ROOT_USERNAME
+>>>>>>> origin/desarrollo
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: inventario-db-secret
+<<<<<<< HEAD
+                  key: password
+            - name: MONGO_INITDB_DATABASE
+              value: "inventario_hardware"
+          volumeMounts:
+            - name: mongodata
+              mountPath: /data/db
+      volumes:
+        - name: mongodata
+          persistentVolumeClaim:
+            claimName: inventario-db-pvc
+=======
                   key: MONGO_INITDB_ROOT_PASSWORD
           volumeMounts:
             - name: mongodb-storage
@@ -48,3 +76,4 @@ spec:
         - name: mongodb-storage
           persistentVolumeClaim:
             claimName: inventario-db-pvc
+>>>>>>> origin/desarrollo

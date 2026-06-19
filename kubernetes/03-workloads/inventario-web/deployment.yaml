@@ -1,0 +1,53 @@
+# TODO: definir imagen real y puerto segun el backend.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventario-web
+  namespace: inventario
+  labels:
+    app: inventario-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventario-web
+  template:
+    metadata:
+      labels:
+        app: inventario-web
+    spec:
+      containers:
+        - name: inventario-web
+          image: inventario-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: egi-config
+          env:
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ubicacion-db-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ubicacion-db-secret
+                  key: password
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-db-secret
+                  key: username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-db-secret
+                  key: password
+            - name: LDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ldap-secret
+                  key: admin-password

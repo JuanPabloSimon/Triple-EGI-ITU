@@ -1,0 +1,15 @@
+# TODO: alinear port/targetPort con el puerto del backend.
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventario-web
+  namespace: inventario
+spec:
+  type: NodePort
+  selector:
+    app: inventario-web
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30080
+      protocol: TCP
