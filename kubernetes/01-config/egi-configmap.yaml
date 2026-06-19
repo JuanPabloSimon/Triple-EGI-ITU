@@ -4,11 +4,12 @@ metadata:
   name: egi-config
   namespace: inventario
 data:
+  NODE_ENV: "production"
+  CORS_ORIGIN: "*"
   SQL_HOST: "ubicacion-db"
   SQL_PORT: "1433"
   SQL_DATABASE: "inventario_ubicacion"
-  MONGO_HOST: "inventario-db"
-  MONGO_PORT: "27017"
+  SQL_ENCRYPT: "false"
+  SQL_TRUST_CERT: "true"
   MONGO_DATABASE: "inventario_hardware"
-  LDAP_URL: "ldap://ldap-service:389"
-  LDAP_BASE_DN: "dc=itu,dc=edu"
+  MONGO_COLLECTION: "equipos_hardware"
