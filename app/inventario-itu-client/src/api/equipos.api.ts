@@ -1,4 +1,3 @@
-// src/api/equipos.api.ts
 import type { EquipoUbicacion, EquipoCompleto } from "../types";
 import { apiFetch } from "./client";
 import {
@@ -21,4 +20,19 @@ export async function getEquipoCompleto(id: number): Promise<EquipoCompleto> {
     return data;
   }
   return apiFetch<EquipoCompleto>(`/equipos/${id}`);
+}
+
+export async function updateEquipo(
+  id: number,
+  cambios: {
+    estado?: string;
+    fecha_mantenimiento?: string | null;
+    responsable?: string;
+    hardware?: Record<string, unknown>;
+  },
+): Promise<EquipoCompleto> {
+  return apiFetch<EquipoCompleto>(`/equipos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(cambios),
+  });
 }

@@ -1,4 +1,3 @@
-// src/pages/DetallePage.tsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEquipoCompleto } from "../api/equipos.api";
@@ -6,81 +5,103 @@ import { ApiError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import type { EquipoCompleto } from "../types";
 import NavBar from "../components/layout/NavBar";
+import EditarModal from "../components/EditarModal";
 import "../styles/detalle.css";
 
 export default function DetallePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { usuario, logout } = useAuth();
 
   const [equipo, setEquipo] = useState<EquipoCompleto | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editando, setEditando] = useState(false);
 
-  useEffect(() => {
-    let activo = true;
+  const puedeEditar = usuario?.rol === "admin" || usuario?.rol === "tecnico";
 
-    async function cargar() {
-      setCargando(true);
-      setError(null);
+  async function cargar() {
+    setCargando(true);
+    setError(null);
 
-      const idNum = Number(id);
-      if (!id || Number.isNaN(idNum)) {
-        if (activo) {
-          setError("ID de equipo inválido.");
-          setCargando(false);
-        }
-        return;
-      }
-
-      try {
-        const data = await getEquipoCompleto(idNum);
-        if (activo) setEquipo(data);
-      } catch (err) {
-        if (!activo) return;
-        if (err instanceof ApiError) {
-          if (err.status === 401) {
-            logout();
-            navigate("/login", { replace: true });
-            return;
-          }
-          if (err.status === 404) {
-            setError("No se encontró el equipo solicitado.");
-          } else {
-            setError(err.message);
-          }
-        } else {
-          setError("Error al cargar el equipo.");
-        }
-      } finally {
-        if (activo) setCargando(false);
-      }
+    const idNum = Number(id);
+    if (!id || Number.isNaN(idNum)) {
+      setError("ID de equipo inválido.");
+      setCargando(false);
+      return;
     }
 
+    try {
+      const data = await getEquipoCompleto(idNum);
+      setEquipo(data);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+          logout();
+          navigate("/login", { replace: true });
+          return;
+        }
+        setError(
+          err.status === 404
+            ? "No se encontró el equipo solicitado."
+            : err.message,
+        );
+      } else {
+        setError("Error al cargar el equipo.");
+      }
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  useEffect(() => {
     cargar();
-    return () => {
-      activo = false;
-    };
-  }, [id, navigate, logout]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   return (
     <div className="detalle">
       <NavBar />
 
       <main className="detalle-main">
-        <button
-          type="button"
-          className="detalle-volver"
-          onClick={() => navigate("/dashboard")}
-        >
-          ← Volver al inventario
-        </button>
+        <div className="detalle-acciones-top">
+          <button
+            type="button"
+            className="detalle-volver"
+            onClick={() => navigate("/dashboard")}
+          >
+            ← Volver al inventario
+          </button>
+
+          {/* Botón solo visible para admin y técnico */}
+          {puedeEditar && equipo && (
+            <button
+              type="button"
+              className="detalle-btn-editar"
+              onClick={() => setEditando(true)}
+            >
+              ✏ Editar equipo
+            </button>
+          )}
+        </div>
 
         {cargando && <p className="detalle-msg">Cargando equipo...</p>}
         {error && <p className="detalle-msg detalle-error">{error}</p>}
 
         {!cargando && !error && equipo && <Contenido equipo={equipo} />}
       </main>
+
+      {/* Modal de edición — solo se monta si puedeEditar y se pidió abrir */}
+      {editando && equipo && (
+        <EditarModal
+          equipo={equipo}
+          onCerrar={() => setEditando(false)}
+          onGuardado={() => {
+            setEditando(false);
+            cargar(); // recarga el equipo con los datos actualizados
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -101,7 +122,6 @@ function Contenido({ equipo }: { equipo: EquipoCompleto }) {
       </header>
 
       <div className="detalle-grid">
-        {/* === Bloque SQL Server: ubicación === */}
         <section className="detalle-card">
           <h2>Ubicación y asignación</h2>
           <p className="detalle-fuente">Fuente: SQL Server</p>
@@ -124,7 +144,6 @@ function Contenido({ equipo }: { equipo: EquipoCompleto }) {
           </dl>
         </section>
 
-        {/* === Si NO hay hardware en Mongo === */}
         {!h && (
           <section className="detalle-card">
             <h2>Hardware</h2>
@@ -136,7 +155,6 @@ function Contenido({ equipo }: { equipo: EquipoCompleto }) {
           </section>
         )}
 
-        {/* === Bloque MongoDB: hardware === */}
         {h && (
           <section className="detalle-card">
             <h2>Hardware</h2>
@@ -166,7 +184,6 @@ function Contenido({ equipo }: { equipo: EquipoCompleto }) {
           </section>
         )}
 
-        {/* === Periféricos (solo si hay hardware) === */}
         {h && (
           <section className="detalle-card">
             <h2>Periféricos</h2>
@@ -188,7 +205,6 @@ function Contenido({ equipo }: { equipo: EquipoCompleto }) {
           </section>
         )}
 
-        {/* === Batería (solo laptops con batería) === */}
         {h?.bateria && (
           <section className="detalle-card">
             <h2>Batería</h2>
