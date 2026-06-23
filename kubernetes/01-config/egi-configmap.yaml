@@ -6,7 +6,7 @@ metadata:
 data:
   NODE_ENV: "production"
   CORS_ORIGIN: "*"
-  SQL_HOST: "ubicacion-db"
+  SQL_HOST: "192.168.10.20"
   SQL_PORT: "1433"
   SQL_DATABASE: "inventario_ubicacion"
   SQL_ENCRYPT: "false"

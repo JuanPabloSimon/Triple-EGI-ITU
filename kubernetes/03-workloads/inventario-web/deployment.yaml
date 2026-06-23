@@ -52,3 +52,8 @@ spec:
                 secretKeyRef:
                   name: inventario-web-secret
                   key: JWT_SECRET
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-web-secret
+                  key: LDAP_BIND_PASSWORD
