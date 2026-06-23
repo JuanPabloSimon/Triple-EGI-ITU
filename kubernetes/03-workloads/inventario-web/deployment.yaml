@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventario-web
+  namespace: inventario
+  labels:
+    app: inventario-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventario-web
+  template:
+    metadata:
+      labels:
+        app: inventario-web
+    spec:
+      containers:
+        - name: inventario-web
+          image: inventario-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: egi-config
+          env:
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ubicacion-db-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ubicacion-db-secret
+                  key: password
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-db-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-db-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_URI
+              value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@inventario-db:27017/?authSource=admin"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-web-secret
+                  key: JWT_SECRET
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventario-web-secret
+                  key: LDAP_BIND_PASSWORD

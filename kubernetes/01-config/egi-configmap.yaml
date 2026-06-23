@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: egi-config
+  namespace: inventario
+data:
+  NODE_ENV: "production"
+  CORS_ORIGIN: "*"
+  SQL_HOST: "192.168.10.20"
+  SQL_PORT: "1433"
+  SQL_DATABASE: "inventario_ubicacion"
+  SQL_ENCRYPT: "false"
+  SQL_TRUST_CERT: "true"
+  MONGO_DATABASE: "inventario_hardware"
+  MONGO_COLLECTION: "equipos_hardware"
