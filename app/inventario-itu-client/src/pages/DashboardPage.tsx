@@ -1,58 +1,78 @@
-// src/pages/DashboardPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEquipos } from "../api/equipos.api";
+import { getEquipos, deleteEquipo } from "../api/equipos.api";
 import { ApiError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import type { EquipoUbicacion } from "../types";
 import NavBar from "../components/layout/NavBar";
+import CrearModal from "../components/CrearModal";
 import "../styles/dashboard.css";
 
 type FiltroEstado = "todos" | "activo" | "mantenimiento" | "baja";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { usuario, logout } = useAuth();
 
   const [equipos, setEquipos] = useState<EquipoUbicacion[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [creando, setCreando] = useState(false);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState<FiltroEstado>("todos");
 
-  useEffect(() => {
-    let activo = true;
+  const puedeEditar = usuario?.rol === "admin" || usuario?.rol === "tecnico";
 
-    async function cargar() {
-      setCargando(true);
-      setError(null);
-      try {
-        const data = await getEquipos();
-        if (activo) setEquipos(data);
-      } catch (err) {
-        if (!activo) return;
-        // Token vencido o inválido → cerramos sesión y vamos al login.
-        if (err instanceof ApiError && err.status === 401) {
-          logout();
-          navigate("/login", { replace: true });
-          return;
-        }
-        setError(
-          err instanceof ApiError
-            ? err.message
-            : "No se pudieron cargar los equipos.",
-        );
-      } finally {
-        if (activo) setCargando(false);
+  async function cargar() {
+    setCargando(true);
+    setError(null);
+    try {
+      const data = await getEquipos();
+      setEquipos(data);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
       }
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "No se pudieron cargar los equipos.",
+      );
+    } finally {
+      setCargando(false);
     }
+  }
 
+  useEffect(() => {
     cargar();
-    return () => {
-      activo = false;
-    };
-  }, [navigate, logout]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleEliminar(e: React.MouseEvent, equipo: EquipoUbicacion) {
+    // Evitar que el click propague a la fila (que navega al detalle)
+    e.stopPropagation();
+    if (
+      !confirm(
+        `¿Eliminar el equipo ${equipo.codigo_inventario}? Esta acción no se puede deshacer.`,
+      )
+    )
+      return;
+
+    try {
+      await deleteEquipo(equipo.id);
+      // Quitar de la lista local sin recargar todo
+      setEquipos((prev) => prev.filter((eq) => eq.id !== equipo.id));
+    } catch (err) {
+      alert(
+        err instanceof ApiError
+          ? err.message
+          : "No se pudo eliminar el equipo.",
+      );
+    }
+  }
 
   const equiposFiltrados = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
@@ -80,6 +100,16 @@ export default function DashboardPage() {
               {equiposFiltrados.length} de {equipos.length} equipos
             </p>
           </div>
+          {/* Botón crear: solo para admin y técnico */}
+          {puedeEditar && (
+            <button
+              type="button"
+              className="dash-btn-crear"
+              onClick={() => setCreando(true)}
+            >
+              + Nuevo equipo
+            </button>
+          )}
         </header>
 
         <div className="dash-toolbar">
@@ -126,6 +156,7 @@ export default function DashboardPage() {
                   <th>Estado</th>
                   <th>Responsable</th>
                   <th>Últ. mantenimiento</th>
+                  {puedeEditar && <th>Acciones</th>}
                 </tr>
               </thead>
               <tbody>
@@ -150,6 +181,17 @@ export default function DashboardPage() {
                     </td>
                     <td>{e.responsable ?? "—"}</td>
                     <td>{e.fecha_mantenimiento ?? "—"}</td>
+                    {puedeEditar && (
+                      <td>
+                        <button
+                          type="button"
+                          className="dash-btn-eliminar"
+                          onClick={(ev) => handleEliminar(ev, e)}
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -157,6 +199,16 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      {creando && (
+        <CrearModal
+          onCerrar={() => setCreando(false)}
+          onGuardado={() => {
+            setCreando(false);
+            cargar();
+          }}
+        />
+      )}
     </div>
   );
 }
