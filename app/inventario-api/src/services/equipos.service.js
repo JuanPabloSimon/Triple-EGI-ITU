@@ -168,3 +168,79 @@ export async function editarEquipo(id, cambios, usuarioReq) {
   // 5. Devolver el equipo actualizado completo.
   return obtenerEquipoCompleto(id, usuarioReq);
 }
+// POST /equipos → crear equipo nuevo (SQL + Mongo)
+export async function crearEquipo(datos, usuarioReq) {
+  const {
+    codigo_inventario,
+    aula_id,
+    numero_banco,
+    fecha_mantenimiento,
+    estado = "activo",
+    hardware,
+  } = datos;
+
+  if (!codigo_inventario || !aula_id || !numero_banco) {
+    const err = new Error("Faltan campos obligatorios: código, aula, banco.");
+    err.codigo = "VALIDACION";
+    throw err;
+  }
+
+  // El mongo_id coincide con el código de inventario (decisión de diseño).
+  const mongoId = codigo_inventario;
+
+  // 1. Insertar en SQL Server
+  await querySql(
+    `INSERT INTO equipos
+       (codigo_inventario, aula_id, numero_banco, fecha_mantenimiento, estado, mongo_id)
+     VALUES
+       (@codigo, @aulaId, @banco, @fecha, @estado, @mongoId)`,
+    {
+      codigo: codigo_inventario,
+      aulaId: aula_id,
+      banco: numero_banco,
+      fecha: fecha_mantenimiento || null,
+      estado,
+      mongoId,
+    },
+  );
+
+  // 2. Insertar documento de hardware en MongoDB
+  if (hardware && typeof hardware === "object") {
+    const coleccion = await getHardwareCollection();
+    await coleccion.insertOne({ _id: mongoId, ...hardware });
+  }
+
+  // 3. Obtener el ID recién insertado para devolver el equipo completo
+  const rows = await querySql(
+    `SELECT id FROM equipos WHERE codigo_inventario = @codigo`,
+    { codigo: codigo_inventario },
+  );
+
+  return obtenerEquipoCompleto(rows[0].id, usuarioReq);
+}
+
+// DELETE /equipos/:id → eliminar equipo (SQL + Mongo)
+export async function eliminarEquipo(id) {
+  const rows = await querySql(
+    `SELECT id, mongo_id FROM equipos WHERE id = @id`,
+    { id },
+  );
+
+  if (rows.length === 0) {
+    return false; // no existe → 404
+  }
+
+  const mongoId = rows[0].mongo_id;
+
+  // 1. Borrar asignaciones vigentes e históricas del equipo
+  await querySql(`DELETE FROM asignaciones WHERE equipo_id = @id`, { id });
+
+  // 2. Borrar el equipo de SQL
+  await querySql(`DELETE FROM equipos WHERE id = @id`, { id });
+
+  // 3. Borrar el documento de hardware de Mongo
+  const coleccion = await getHardwareCollection();
+  await coleccion.deleteOne({ _id: mongoId });
+
+  return true;
+}

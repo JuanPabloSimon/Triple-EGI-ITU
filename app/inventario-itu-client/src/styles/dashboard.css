@@ -195,3 +195,35 @@
     min-width: 640px;
   }
 }
+
+/* Botón nuevo equipo */
+.dash-btn-crear {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.dash-btn-crear:hover {
+  background: #74c7ec;
+}
+
+/* Botón eliminar en la tabla */
+.dash-btn-eliminar {
+  background: transparent;
+  border: 1px solid #f38ba8;
+  color: #f38ba8;
+  border-radius: 5px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dash-btn-eliminar:hover {
+  background: rgba(243, 139, 168, 0.15);
+}
