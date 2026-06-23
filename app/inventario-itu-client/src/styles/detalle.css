@@ -159,3 +159,158 @@
   color: var(--text);
   font-style: italic;
 }
+
+/* ── Botón editar ── */
+.detalle-acciones-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.detalle-btn-editar {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.detalle-btn-editar:hover {
+  background-color: #1d4ed8;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-caja {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #313244;
+}
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #cdd6f4;
+}
+.modal-cerrar {
+  background: none;
+  border: none;
+  color: #6c7086;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+.modal-cerrar:hover {
+  color: #f38ba8;
+}
+
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-seccion h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #89b4fa;
+  margin: 0 0 0.75rem;
+}
+
+.modal-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+.modal-campo label {
+  font-size: 0.82rem;
+  color: #a6adc8;
+}
+.modal-campo input,
+.modal-campo select {
+  background: #181825;
+  border: 1px solid #313244;
+  color: #cdd6f4;
+  border-radius: 5px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.9rem;
+}
+.modal-campo input:focus,
+.modal-campo select:focus {
+  outline: none;
+  border-color: #89b4fa;
+}
+
+.modal-error {
+  color: #f38ba8;
+  font-size: 0.85rem;
+  background: rgba(243, 139, 168, 0.1);
+  border: 1px solid rgba(243, 139, 168, 0.3);
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #313244;
+}
+
+.modal-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.modal-btn--cancelar {
+  background: #313244;
+  color: #cdd6f4;
+}
+.modal-btn--cancelar:hover:not(:disabled) {
+  background: #45475a;
+}
+.modal-btn--guardar {
+  background: #89b4fa;
+  color: #1e1e2e;
+  font-weight: 600;
+}
+.modal-btn--guardar:hover:not(:disabled) {
+  background: #74c7ec;
+}
