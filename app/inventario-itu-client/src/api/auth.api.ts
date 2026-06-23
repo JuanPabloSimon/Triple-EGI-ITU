@@ -1,27 +1,32 @@
 // src/api/auth.api.ts
-import { apiFetch, setToken } from "./client";
 import type { Usuario } from "../types";
+import { apiFetch, setToken } from "./client";
+import { authenticate } from "./mockUsers";
 
-interface LoginResponse {
-  token: string;
-  usuario: Usuario;
-}
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
-// POST /auth/login → guarda el token y devuelve el usuario.
 export async function login(
   username: string,
   password: string,
 ): Promise<Usuario> {
-  const data = await apiFetch<LoginResponse>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
-
+  if (USE_MOCK) {
+    const res = await authenticate(username, password);
+    if (!res.ok || !res.usuario)
+      throw new Error(res.error ?? "Credenciales inválidas.");
+    setToken("mock-token");
+    return res.usuario;
+  }
+  const data = await apiFetch<{ token: string; usuario: Usuario }>(
+    "/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    },
+  );
   setToken(data.token);
   return data.usuario;
 }
 
-// Cierra sesión: limpia el token local.
 export function logout() {
   setToken(null);
 }
