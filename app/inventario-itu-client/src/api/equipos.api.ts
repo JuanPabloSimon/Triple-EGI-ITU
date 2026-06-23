@@ -36,3 +36,21 @@ export async function updateEquipo(
     body: JSON.stringify(cambios),
   });
 }
+
+export async function createEquipo(datos: {
+  codigo_inventario: string;
+  aula_id: number;
+  numero_banco: number;
+  fecha_mantenimiento?: string | null;
+  estado?: string;
+  hardware?: Record<string, unknown>;
+}): Promise<EquipoCompleto> {
+  return apiFetch<EquipoCompleto>("/equipos", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export async function deleteEquipo(id: number): Promise<void> {
+  return apiFetch<void>(`/equipos/${id}`, { method: "DELETE" });
+}

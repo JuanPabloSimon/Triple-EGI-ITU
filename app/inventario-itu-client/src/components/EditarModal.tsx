@@ -91,7 +91,11 @@ export default function EditarModal({ equipo, onCerrar, onGuardado }: Props) {
               <select
                 id="estado"
                 value={estado}
-                onChange={(e) => setEstado(e.target.value)}
+                onChange={(e) =>
+                  setEstado(
+                    e.target.value as "activo" | "baja" | "mantenimiento",
+                  )
+                }
               >
                 <option value="activo">Activo</option>
                 <option value="mantenimiento">Mantenimiento</option>
